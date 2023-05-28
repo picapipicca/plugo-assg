@@ -7,7 +7,7 @@ const Layout = () => {
     <div className="min-h-screen border border-blue-500">
       <div>
         <Header />
-        <main className="py-4 px-6 border border-emerald-500">
+        <main className="py-4 px-6 border-2 flex flex-col border-emerald-500">
           <Outlet />
         </main>
       </div>
