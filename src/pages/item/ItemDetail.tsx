@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useQuery } from "react-query";
 import { useParams } from "react-router-dom";
+import useCartStore, { ItemSingleState } from "../../zustand/store";
 
 interface ItemDetailProps {
   id: number;
@@ -20,19 +21,28 @@ const ItemDetail = () => {
   const { id } = useParams();
   const [currentImg, setCurrentImg] = useState<number>(0);
   const [selected, setSelected] = useState<string>("");
-  const { data, error, isLoading } = useQuery<ItemDetailProps>(
-    "singleItem",
-    () =>
-      fetch(`https://dummyjson.com/products/${id}`).then((res) => res.json())
+  const { data, isLoading } = useQuery<ItemDetailProps>("singleItem", () =>
+    fetch(`https://dummyjson.com/products/${id}`).then((res) => res.json())
   );
+  const { items, addItem } = useCartStore();
 
+  const addCartItem = () => {
+    const item: ItemSingleState = {
+      id: Number(id),
+      name: data?.title,
+      count: Number(selected),
+      price: data?.price,
+      thumbnail: data?.thumbnail,
+    };
+    addItem(item);
+    alert("Added to Cart");
+  };
   const changeImg = (idx: number) => {
     setCurrentImg(idx);
   };
 
   if (isLoading) return <h2>Loading...</h2>;
-
-  //TODO: Cart Add
+  console.log("::::::::items::::::", items);
 
   return (
     <div>
@@ -82,7 +92,8 @@ const ItemDetail = () => {
               {data?.description}
             </p>
             <div className="w-full mb-4">
-              <select className="w-full h-10 bg-sky-50 border border-gray-100 px-2"
+              <select
+                className="w-full h-10 bg-sky-50 border border-gray-100 px-2"
                 onChange={(e) => setSelected(e.target.value)}
                 value={selected}
               >
@@ -97,6 +108,7 @@ const ItemDetail = () => {
             </div>
             <div className={"flex items-center justify-between space-x-2"}>
               <button
+                onClick={addCartItem}
                 className={
                   "flex-1 bg-gray-600 text-white py-3 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gary-500 hover:bg-gray-700"
                 }
