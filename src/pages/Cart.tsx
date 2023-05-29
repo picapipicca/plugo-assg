@@ -1,5 +1,5 @@
 import React from "react";
-import useCartStore from "../zustand/store";
+import {useCartStore} from "../zustand/store";
 import { Link } from "react-router-dom";
 
 const Cart = () => {

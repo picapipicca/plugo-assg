@@ -8,6 +8,17 @@ export interface ItemSingleState {
   price?: number;
   thumbnail?: string;
 }
+type uploadItemState = {
+  id: number;
+  title: string;
+  price: number;
+  description: string;
+  itemPhoto?: string;
+};
+interface AdminState {
+  uploadItem: uploadItemState;
+  setItem: (item: uploadItemState) => void;
+}
 interface CartState {
   items: ItemSingleState[];
   addItem: (item: ItemSingleState) => void;
@@ -43,4 +54,23 @@ const useCartStore = create<CartState>()(
     )
   )
 );
-export default useCartStore;
+const useNewItemStore = create<AdminState>()(
+  devtools(
+    persist(
+      (set) => ({
+        uploadItem: {
+          id: 0,
+          title: "",
+          description: "",
+          price: 0,
+          itemPhoto: "",
+        },
+        setItem: (item: uploadItemState) => set({ uploadItem: item }),
+      }),
+      {
+        name: "item-storage",
+      }
+    )
+  )
+);
+export { useCartStore, useNewItemStore };
