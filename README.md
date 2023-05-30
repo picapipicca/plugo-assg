@@ -1,9 +1,11 @@
 # plugo-assg
+
 <br/>
+
 ## 사이트 링크
-  [plugo-assg.firebaseapp.com](https://plugo-assg.firebaseapp.com/) <br/> 
+ -  [plugo-assg.firebaseapp.com](https://plugo-assg.firebaseapp.com/) <br/> 
     or <br/>
-    [plugo-assg.web.app](https://plugo-assg.web.app/)
+ -  [plugo-assg.web.app](https://plugo-assg.web.app/)
     
 ## 기술 스텍 및 라이브러리 
 - 주요언어: Typescript
