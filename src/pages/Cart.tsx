@@ -1,9 +1,16 @@
 import React from "react";
-import {useCartStore} from "../zustand/store";
+import { useCartStore } from "../zustand/store";
 import { Link } from "react-router-dom";
 
 const Cart = () => {
   const { items, removeItem, clearItem } = useCartStore();
+  const totalPrice = items.reduce((acc, item) => {
+    let { price, count } = item;
+    if (price !== undefined) {
+      acc = acc + price * count;
+    }
+    return acc;
+  }, 0);
 
   return (
     <div>
@@ -60,6 +67,9 @@ const Cart = () => {
                 </div>
               );
             })}
+          </div>
+          <div className="flex justify-end w-full text-2xl px-4 py-2 text-slate-700">
+            <span className=" font-bold ">Total &nbsp;</span> {totalPrice}
           </div>
         </>
       ) : (
