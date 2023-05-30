@@ -25,7 +25,18 @@ interface CartState {
   removeItem: (id: number) => void;
   clearItem: () => void;
 }
-
+interface ModalProps {
+  modalProps?: {
+    title: string;
+    content?: string | number;
+  };
+}
+interface ModalState extends ModalProps {
+  modalOpenStatus: boolean;
+  openModal: (props: ModalProps) => void;
+  closeModal: () => void;
+  updateContentModal: (content: number) => void;
+}
 const useCartStore = create<CartState>()(
   devtools(
     persist(
@@ -73,4 +84,21 @@ const useNewItemStore = create<AdminState>()(
     )
   )
 );
-export { useCartStore, useNewItemStore };
+
+const useModalStore = create<ModalState>((set) => ({
+  modalOpenStatus: false,
+  modalProps: { title: "", content: "" },
+  openModal: (props: ModalProps) =>
+    set({ modalOpenStatus: true, modalProps: props.modalProps }),
+  closeModal: () => set({ modalOpenStatus: false }),
+  updateContentModal: (content: number) =>
+    set((state) =>
+      typeof state.modalProps?.content === "number"
+        ? {
+            modalOpenStatus: false,
+            modalProps: { title: state.modalProps.title, content: content },
+          }
+        : state
+    ),
+}));
+export { useCartStore, useNewItemStore, useModalStore };

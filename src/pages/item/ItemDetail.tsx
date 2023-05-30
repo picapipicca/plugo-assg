@@ -1,12 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   useCartStore,
   ItemSingleState,
   useNewItemStore,
+  useModalStore,
 } from "../../zustand/store";
-
+import Modal from "../../components/Modal";
 interface ItemDetailProps {
   id: number;
   title: string;
@@ -24,8 +25,9 @@ interface ItemDetailProps {
 const ItemDetail = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const { openModal, modalOpenStatus, modalProps } = useModalStore();
   const [currentImg, setCurrentImg] = useState<number>(0);
-  const [selected, setSelected] = useState<string>("");
+  const [count, setCount] = useState<number>(1);
   const { data, isLoading } = useQuery<ItemDetailProps>({
     queryKey: "singleItem",
     queryFn: async () => {
@@ -42,7 +44,7 @@ const ItemDetail = () => {
     const item: ItemSingleState = {
       id: Number(id),
       name: data?.title,
-      count: Number(selected),
+      count: Number(count),
       price: data?.price,
       thumbnail: data?.thumbnail,
     };
@@ -52,19 +54,30 @@ const ItemDetail = () => {
   const changeImg = (idx: number) => {
     setCurrentImg(idx);
   };
+  const decrement = () => {
+    setCount((prev) => (prev === 0 ? prev : prev - 1));
+  };
+  const increment = () => {
+    setCount((prev) => prev + 1);
+  };
+  useEffect(() => {
+    if (modalProps?.content) {
+      setCount(Number(modalProps.content));
+    }
+  }, [modalProps?.content]);
 
   if (isLoading) return <h2 className="text-3xl">Loading...</h2>;
   if (!data && !uploadItem) {
     navigate("/item");
   }
-  
+
   return (
     <>
       {data ? (
         <div className={"px-4 py-4"}>
           <div className={"mb-8 flex space-x-8"}>
             <div className="relative w-1/2 flex space-x-2">
-              <ul className="w-1">
+              <ul className={`${data ? "w-10" : "w-1"}`}>
                 {data?.images &&
                   data?.images.map((img, idx) => {
                     return (
@@ -109,20 +122,28 @@ const ItemDetail = () => {
               <p className={"text-base my-6 text-gray-700"}>
                 {data?.description}
               </p>
-              <div className="w-full mb-4">
-                <select
-                  className="w-full h-10 bg-sky-50 border border-gray-100 px-2"
-                  onChange={(e) => setSelected(e.target.value)}
-                  value={selected}
-                >
-                  {[1, 2, 3, 4, 5].map((num) => {
-                    return (
-                      <option key={num} value={num}>
-                        {num}
-                      </option>
-                    );
-                  })}
-                </select>
+              <div className="flex justify-between">
+                <div className="w-fit px-5 rounded-lg py-1 mb-4 space-x-4 text-xl bg-sky-100">
+                  <span className="cursor-pointer" onClick={decrement}>
+                    -
+                  </span>
+                  <button
+                    onClick={() =>
+                      openModal({
+                        modalProps: {
+                          title: "Update Quantity",
+                          content: count,
+                        },
+                      })
+                    }
+                  >
+                    {count}
+                  </button>
+                  <span className="cursor-pointer" onClick={increment}>
+                    +
+                  </span>
+                </div>
+                <p className="text-lg"><span className="text-gray-600 font-semibold">Total &nbsp;</span>{data?.price * count}</p>
               </div>
               <div className={"flex items-center justify-between space-x-2"}>
                 <button
@@ -136,19 +157,24 @@ const ItemDetail = () => {
               </div>
             </div>
           </div>
+          {modalOpenStatus && <Modal />}
         </div>
       ) : (
         <div className={"px-4 py-4"}>
           <div className={"mb-8 flex space-x-8"}>
             <div className="relative w-1/2 flex space-x-2">
               <div className="w-full">
-                {uploadItem.itemPhoto === "" || undefined  || !uploadItem.itemPhoto? (
+                {uploadItem.itemPhoto === "" ||
+                undefined ||
+                !uploadItem.itemPhoto ? (
                   <div
                     className={
                       "mx-auto text-center flex w-full h-full rounded-lg bg-gray-300"
                     }
                   >
-                    <p className="my-auto mx-auto text-3xl font-bole">No Image</p>
+                    <p className="my-auto mx-auto text-3xl font-bole">
+                      No Image
+                    </p>
                   </div>
                 ) : (
                   <img
