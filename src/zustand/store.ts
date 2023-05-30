@@ -43,7 +43,6 @@ const useCartStore = create<CartState>()(
       (set) => ({
         items: [],
         addItem: (newItem: ItemSingleState) =>
-          //   set((state) => ({ items: [...state.items, item] })),
           set((state) => ({
             items: state.items.find((item) => item.id === newItem.id)
               ? state.items.map((item) =>

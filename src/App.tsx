@@ -1,6 +1,5 @@
 import { Route, Routes } from "react-router-dom";
 import Layout from "./components/Layout";
-import Home from "./pages/Home";
 import Nomatch from "./components/Nomatch";
 import ItemList from "./pages/item/ItemList";
 import ItemDetail from "./pages/item/ItemDetail";
@@ -13,7 +12,7 @@ function App() {
     <>
       <Routes>
         <Route path="/" element={<Layout />}>
-          <Route index element={<Home />} />
+          <Route index element={<ItemList />} />
           <Route path="item">
             <Route index element={<ItemList />} />
             <Route path=":id" element={<ItemDetail />} />

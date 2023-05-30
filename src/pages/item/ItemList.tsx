@@ -1,15 +1,18 @@
 import { useQuery } from "react-query";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 const ItemList = () => {
+  const location = useLocation();
   const { isLoading, data } = useQuery("item", () =>
     fetch("https://dummyjson.com/products").then((res) => res.json())
   );
+  const title = location.pathname.split("/")[1] === "item" ? "All Product" : "";
+  
   if (isLoading) return <h2 className="text-3xl font-bold">Loading...</h2>;
 
   return (
     <>
-      <h2 className="text-3xl mb-8">All Product</h2>
+      <h2 className="text-3xl mb-8">{title}</h2>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-8 w-full">
         {data.products.map((item: any) => (
           <div key={item.id} className="">

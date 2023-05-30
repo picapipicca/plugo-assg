@@ -4,7 +4,7 @@ import { useModalStore } from "../zustand/store";
 const Modal = () => {
   const { modalProps, closeModal, updateContentModal } = useModalStore();
   const inputRef = useRef<HTMLInputElement>(null);
-  console.log("modal open");
+
   return (
     <>
       <>
