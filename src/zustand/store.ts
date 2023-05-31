@@ -1,70 +1,48 @@
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
+import {
+  ICartStoreState,
+  ICartStorePersist,
+  ICartStore,
+  IItemSingleState,
+  IAdminState,
+  IUploadItemState,
+  IModalState,
+  IModalProps,
+} from "./Interface";
 
-export interface ItemSingleState {
-  id: number;
-  count: number;
-  name?: string;
-  price?: number;
-  thumbnail?: string;
-}
-type uploadItemState = {
-  id: number;
-  title: string;
-  price: number;
-  description: string;
-  itemPhoto?: string;
+const initialState: ICartStoreState = {
+  cartList: [],
 };
-interface AdminState {
-  uploadItem: uploadItemState;
-  setItem: (item: uploadItemState) => void;
-}
-interface CartState {
-  items: ItemSingleState[];
-  addItem: (item: ItemSingleState) => void;
-  removeItem: (id: number) => void;
-  clearItem: () => void;
-}
-interface ModalProps {
-  modalProps?: {
-    title: string;
-    content?: string | number;
-  };
-}
-interface ModalState extends ModalProps {
-  modalOpenStatus: boolean;
-  openModal: (props: ModalProps) => void;
-  closeModal: () => void;
-  updateContentModal: (content: number) => void;
-}
-const useCartStore = create<CartState>()(
-  devtools(
-    persist(
-      (set) => ({
-        items: [],
-        addItem: (newItem: ItemSingleState) =>
-          set((state) => ({
-            items: state.items.find((item) => item.id === newItem.id)
-              ? state.items.map((item) =>
-                  item.id === newItem.id
-                    ? { ...item, count: item.count + newItem.count }
-                    : item
-                )
-              : [...state.items, newItem],
-          })),
-        removeItem: (id: number) =>
-          set((state) => ({
-            items: state.items.filter((item) => item.id !== id),
-          })),
-        clearItem: () => set((state) => ({ items: [] })),
-      }),
-      {
-        name: "cart-storage",
-      }
-    )
+
+const useCartStore = create<ICartStore>(
+  (persist as ICartStorePersist)(
+    (set, get) => ({
+      cartList: initialState.cartList,
+      addItem: (newItem: IItemSingleState) =>
+        set({
+          cartList: get().cartList.find((item) => item.id === newItem.id)
+            ? get().cartList.map((item) =>
+                item.id === newItem.id
+                  ? { ...item, count: item.count + newItem.count }
+                  : item
+              )
+            : [...get().cartList, newItem],
+        }),
+      removeItem: (id: number) =>
+        set({
+          cartList: get().cartList.filter((item) => item.id !== id),
+        }),
+      clearItem: () => set({ cartList: [] }),
+    }),
+    {
+      name: "cart-store", 
+      partialize: (state) => ({ cartList: state.cartList }),
+    }
   )
 );
-const useNewItemStore = create<AdminState>()(
+
+const useNewItemStore = create<IAdminState>()(
   devtools(
     persist(
       (set) => ({
@@ -75,7 +53,7 @@ const useNewItemStore = create<AdminState>()(
           price: 0,
           itemPhoto: "",
         },
-        setItem: (item: uploadItemState) => set({ uploadItem: item }),
+        setItem: (item: IUploadItemState) => set({ uploadItem: item }),
       }),
       {
         name: "item-storage",
@@ -84,10 +62,10 @@ const useNewItemStore = create<AdminState>()(
   )
 );
 
-const useModalStore = create<ModalState>((set) => ({
+const useModalStore = create<IModalState>((set) => ({
   modalOpenStatus: false,
   modalProps: { title: "", content: "" },
-  openModal: (props: ModalProps) =>
+  openModal: (props: IModalProps) =>
     set({ modalOpenStatus: true, modalProps: props.modalProps }),
   closeModal: () => set({ modalOpenStatus: false }),
   updateContentModal: (content: number) =>

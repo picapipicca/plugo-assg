@@ -3,10 +3,10 @@ import { useQuery } from "react-query";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   useCartStore,
-  ItemSingleState,
   useNewItemStore,
   useModalStore,
 } from "../../zustand/store";
+import { IItemSingleState } from "../../zustand/Interface";
 import Modal from "../../components/Modal";
 interface ItemDetailProps {
   id: number;
@@ -41,7 +41,7 @@ const ItemDetail = () => {
   const { addItem } = useCartStore();
   const { uploadItem } = useNewItemStore();
   const addCartItem = () => {
-    const item: ItemSingleState = {
+    const item: IItemSingleState = {
       id: Number(id),
       name: data?.title,
       count: Number(count),
@@ -143,7 +143,12 @@ const ItemDetail = () => {
                     +
                   </span>
                 </div>
-                <p className="text-lg"><span className="text-gray-600 font-semibold">Total &nbsp;</span>{data?.price * count}</p>
+                <p className="text-lg">
+                  <span className="text-gray-600 font-semibold">
+                    Total &nbsp;
+                  </span>
+                  {data?.price * count}
+                </p>
               </div>
               <div className={"flex items-center justify-between space-x-2"}>
                 <button

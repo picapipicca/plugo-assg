@@ -3,8 +3,8 @@ import { useCartStore } from "../zustand/store";
 import { Link } from "react-router-dom";
 
 const Cart = () => {
-  const { items, removeItem, clearItem } = useCartStore();
-  const totalPrice = items.reduce((acc, item) => {
+  const { cartList, removeItem, clearItem } = useCartStore();
+  const totalPrice = cartList.reduce((acc, item) => {
     let { price, count } = item;
     if (price !== undefined) {
       acc = acc + price * count;
@@ -14,7 +14,7 @@ const Cart = () => {
 
   return (
     <div>
-      {items ? (
+      {cartList ? (
         <>
           <div className="flex justify-between pr-4 mb-8">
             <h2 className="text-3xl font-bold">Cart</h2>
@@ -26,7 +26,7 @@ const Cart = () => {
             </button>
           </div>
           <div className="space-y-4">
-            {items.map((item) => {
+            {cartList.map((item) => {
               return (
                 <div
                   key={item.id}
